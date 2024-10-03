@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Duration;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -149,16 +150,16 @@ public final class SynchronizationContext implements Executor {
       final Runnable task, long delay, TimeUnit unit, ScheduledExecutorService timerService) {
     final ManagedRunnable runnable = new ManagedRunnable(task);
     ScheduledFuture<?> future = timerService.schedule(new Runnable() {
-        @Override
-        public void run() {
-          execute(runnable);
-        }
+      @Override
+      public void run() {
+        execute(runnable);
+      }
 
-        @Override
-        public String toString() {
-          return task.toString() + "(scheduled in SynchronizationContext)";
-        }
-      }, delay, unit);
+      @Override
+      public String toString() {
+        return task.toString() + "(scheduled in SynchronizationContext)";
+      }
+    }, delay, unit);
     return new ScheduledHandle(runnable, future);
   }
 
@@ -193,6 +194,13 @@ public final class SynchronizationContext implements Executor {
     return new ScheduledHandle(runnable, future);
   }
 
+  public final ScheduledHandle scheduleWithFixedDelay(
+      final Runnable task, Duration initialDelay, Duration delay,
+      ScheduledExecutorService timerService) {
+    return scheduleWithFixedDelay(task, TimeUnit.NANOSECONDS.convert(initialDelay.getSeconds(),
+        TimeUnit.SECONDS), TimeUnit.NANOSECONDS.convert(delay.getSeconds(), TimeUnit.SECONDS),
+        TimeUnit.NANOSECONDS, timerService);
+  }
 
   private static class ManagedRunnable implements Runnable {
     final Runnable task;

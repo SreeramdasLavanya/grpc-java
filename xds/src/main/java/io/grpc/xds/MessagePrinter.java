@@ -65,7 +65,10 @@ final class MessagePrinter implements MessagePrettyPrinter {
               .add(RouteConfiguration.getDescriptor())
               .add(Cluster.getDescriptor())
               .add(ClusterConfig.getDescriptor())
-              .add(ClusterLoadAssignment.getDescriptor());
+              .add(ClusterLoadAssignment.getDescriptor())
+              .add(WrrLocality.getDescriptor())
+              .add(TypedStruct.getDescriptor());
+
       try {
         @SuppressWarnings("unchecked")
         Class<? extends Message> routeLookupClusterSpecifierClass =
